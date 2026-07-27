@@ -1,0 +1,6 @@
+{
+  "name": "ZiyaratYar",
+  "description": "A modern offline-first smart search platform for Ziyarat services.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

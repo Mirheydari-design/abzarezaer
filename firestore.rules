@@ -1,0 +1,72 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    function isValidString(str, maxLen) {
+      return str is string && str.size() > 0 && str.size() <= maxLen;
+    }
+
+    // Services collection
+    match /services/{serviceId} {
+      allow read: if true;
+      allow create: if isSignedIn() &&
+        request.resource.data.keys().hasAll(['name', 'description', 'type', 'emoji', 'tags', 'gradient', 'reviewCount', 'authorId', 'createdAt']) &&
+        request.resource.data.authorId == request.auth.uid &&
+        request.resource.data.reviewCount == 0 &&
+        isValidString(request.resource.data.name, 100) &&
+        isValidString(request.resource.data.description, 2000) &&
+        isValidString(request.resource.data.type, 50) &&
+        isValidString(request.resource.data.emoji, 10) &&
+        request.resource.data.tags is list &&
+        request.resource.data.tags.size() <= 10 &&
+        isValidString(request.resource.data.gradient, 100) &&
+        request.resource.data.createdAt is string;
+
+      allow update: if isSignedIn() &&
+        // Allow updating review count
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reviewCount']) &&
+        request.resource.data.reviewCount is number;
+    }
+
+    // Reviews collection
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isSignedIn() &&
+        request.resource.data.keys().hasAll(['serviceId', 'userId', 'userName', 'rating', 'comment', 'date']) &&
+        request.resource.data.userId == request.auth.uid &&
+        isValidString(request.resource.data.serviceId, 100) &&
+        isValidString(request.resource.data.userName, 100) &&
+        request.resource.data.rating is number &&
+        request.resource.data.rating >= 1 && request.resource.data.rating <= 5 &&
+        isValidString(request.resource.data.comment, 1000) &&
+        request.resource.data.date is string &&
+        exists(/databases/$(database)/documents/services/$(request.resource.data.serviceId));
+    }
+
+    // Search History collection
+    match /search_history/{historyId} {
+      allow read: if isOwner(resource.data.userId);
+      allow create: if isSignedIn() &&
+        request.resource.data.keys().hasAll(['userId', 'query', 'date']) &&
+        request.resource.data.userId == request.auth.uid &&
+        isValidString(request.resource.data.query, 200) &&
+        request.resource.data.date is string;
+      allow delete: if isOwner(resource.data.userId);
+    }
+  }
+}
