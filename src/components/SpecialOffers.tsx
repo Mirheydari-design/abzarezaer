@@ -9,33 +9,36 @@ export function SpecialOffers() {
 
   const offers = [
     {
-      id: 1,
-      title: "تخفیف ویژه قطار مشهد",
-      description: "تا ۳۰٪ تخفیف برای رزرو بلیط قطارهای ۵ ستاره فدک و نورالرضا به مناسبت اعیاد شعبانیه",
-      gradient: "from-blue-500 to-indigo-600",
-      tag: "پیشنهاد ویژه",
+        "id": "24",
+        "title": "پلتفرم راه زائر",
+        "description": "دستیار هوشمند مسیر شامل اطلاع از وضعیت مرزها، اوقات شرعی و اشتراک‌گذاری لحظه‌ای وضعیت مسیر",
+        "gradient": "from-fuchsia-400 to-violet-500",
+        "tag": "دستیار جامع سفر",
+        "link": "rahezaer.taavonafarin.ir"
     },
     {
-      id: 2,
-      title: "ثبت‌نام خادمین افتخاری",
-      description: "آغاز ثبت‌نام خادمین افتخاری برای موکب‌های مسیر نجف به کربلا در ایام اربعین حسینی",
-      gradient: "from-emerald-500 to-teal-600",
-      tag: "فراخوان",
+        "id": "23",
+        "title": "اپلیکیشن حساب زائر",
+        "description": "محاسبه‌گر دقیق دینار به تومان؛ نمایش مبالغ به حروف و زبان عربی جهت نمایش به فروشنده",
+        "gradient": "from-amber-400 to-orange-500",
+        "tag": "ابزار مالی زائر",
+        "link": "https://hesabezaer.taavonafarin.ir"
     },
     {
-      id: 3,
-      title: "سوغات سرا - ارسال رایگان",
-      description: "ارسال رایگان تمامی سفارشات سوغات مشهد مقدس به سراسر کشور تا پایان ماه جاری",
-      gradient: "from-amber-500 to-orange-600",
-      tag: "فروشگاه",
+        "id": "3",
+        "title": "خانه زیارت",
+        "description": "پلتفرم هوشمند برای مقایسه کاروان‌های معتبر و مدیریت کمک‌های خیریه برای اعزام زائر اولی‌ها.",
+        "gradient": "from-teal-400 to-emerald-500",
+        "tag": "پلتفرم تسهیل‌گر",
+        "link": "https://ziarathome.ir"
     }
-  ];
+];
 
   const getGradientStyle = (gradientStr: string) => {
     const colorMap: Record<string, string[]> = {
-      'from-blue-500 to-indigo-600': ['#3b82f6', '#4f46e5'],
-      'from-emerald-500 to-teal-600': ['#10b981', '#0d9488'],
-      'from-amber-500 to-orange-600': ['#f59e0b', '#ea580c'],
+      'from-fuchsia-400 to-violet-500': ['#e879f9', '#8b5cf6'],
+      'from-amber-400 to-orange-500': ['#fbbf24', '#f97316'],
+      'from-teal-400 to-emerald-500': ['#2dd4bf', '#10b981'],
     };
     const colors = colorMap[gradientStr] || ['#3b82f6', '#4f46e5'];
     return { background: `linear-gradient(to left, ${colors[0]}, ${colors[1]})` };
@@ -69,7 +72,7 @@ export function SpecialOffers() {
           {offers.map((offer) => (
             <div key={offer.id} className="flex-[0_0_100%] min-w-0 pl-4 md:flex-[0_0_80%] lg:flex-[0_0_60%]">
               <div
-                className="relative overflow-hidden rounded-3xl p-6 md:p-8 text-white shadow-lg cursor-grab active:cursor-grabbing group h-full flex flex-col justify-between"
+                className="relative overflow-hidden rounded-2xl p-6 text-white shadow-md cursor-grab active:cursor-grabbing group h-full flex flex-col justify-between"
                 style={getGradientStyle(offer.gradient)}
               >
                 <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -79,16 +82,16 @@ export function SpecialOffers() {
                 <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-32 h-32 bg-black/10 rounded-full blur-xl pointer-events-none"></div>
                 
                 <div className="relative z-10 flex-grow">
-                  <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-bold mb-4 border border-white/20">
+                  <span className="inline-block px-2.5 py-1 bg-white/20 backdrop-blur-sm rounded-lg text-xs font-bold mb-4 border border-white/20">
                     {offer.tag}
                   </span>
-                  <h4 className="text-2xl font-bold mb-2">{offer.title}</h4>
-                  <p className="text-white/80 leading-relaxed max-w-sm mb-6">
+                  <h4 className="text-xl font-bold mb-2">{offer.title}</h4>
+                  <p className="text-white/80 text-sm leading-relaxed max-w-sm mb-4">
                     {offer.description}
                   </p>
                 </div>
                 
-                <div className="relative z-10 mt-auto flex items-center gap-2 text-sm font-bold group-hover:translate-x-[-8px] transition-transform">
+                <div className="relative z-10 mt-auto flex items-center gap-1.5 text-sm font-bold group-hover:translate-x-[-8px] transition-transform">
                   <span>مشاهده جزئیات</span>
                   <ArrowLeft className="w-4 h-4" />
                 </div>

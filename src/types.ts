@@ -2,13 +2,13 @@ export interface ZiyaratService {
   id: string;
   name: string;
   description: string;
-  rating?: number;
   reviewCount?: number;
   tags: string[];
   embedding?: number[];
   emoji: string;
   gradient: string;
   type: string;
+  link?: string;
 }
 
 export interface Review {
@@ -16,7 +16,6 @@ export interface Review {
   serviceId: string;
   userId: string;
   userName: string;
-  rating: number;
   comment: string;
   date: string;
 }

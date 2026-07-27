@@ -56,7 +56,6 @@ export function ServiceDetailModal({ service, isOpen, onClose }: ServiceDetailMo
         serviceId: service.id,
         userId: auth.currentUser.uid,
         userName: auth.currentUser.displayName || 'کاربر',
-        rating: 5, // Default for now
         comment: newComment.trim(),
         date: new Date().toISOString()
       };
@@ -71,7 +70,7 @@ export function ServiceDetailModal({ service, isOpen, onClose }: ServiceDetailMo
     }
   };
 
-  const getGradientStyle = (gradientStr: string) => {
+  const getGradientStyle = (gradientStr: string, id: string) => {
     const colorMap: Record<string, string[]> = {
       'from-blue-400 to-indigo-500': ['#60a5fa', '#6366f1'],
       'from-sky-400 to-cyan-500': ['#38bdf8', '#06b6d4'],
@@ -83,7 +82,24 @@ export function ServiceDetailModal({ service, isOpen, onClose }: ServiceDetailMo
       'from-emerald-400 to-green-500': ['#34d399', '#22c55e'],
       'from-teal-500 to-emerald-600': ['#14b8a6', '#059669'],
     };
-    const colors = colorMap[gradientStr] || ['#94a3b8', '#64748b'];
+    
+    const fallbacks = [
+      ['#f472b6', '#db2777'],
+      ['#818cf8', '#4f46e5'],
+      ['#34d399', '#059669'],
+      ['#fb923c', '#ea580c'],
+      ['#a78bfa', '#7c3aed'],
+      ['#38bdf8', '#0284c7'],
+    ];
+
+    if (gradientStr && colorMap[gradientStr]) {
+       const colors = colorMap[gradientStr];
+       return { background: `linear-gradient(to bottom right, ${colors[0]}, ${colors[1]})` };
+    }
+    
+    // deterministic fallback based on id
+    const hash = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const colors = fallbacks[hash % fallbacks.length];
     return { background: `linear-gradient(to bottom right, ${colors[0]}, ${colors[1]})` };
   };
 
@@ -103,36 +119,30 @@ export function ServiceDetailModal({ service, isOpen, onClose }: ServiceDetailMo
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white dark:bg-slate-900 w-full max-w-2xl max-h-[85vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col pointer-events-auto border border-slate-200 dark:border-slate-800"
+              className="bg-white dark:bg-slate-900 w-full max-w-2xl max-h-[85vh] rounded-2xl shadow-xl overflow-hidden flex flex-col pointer-events-auto border border-slate-200 dark:border-slate-800"
               dir="rtl"
             >
-              <div className="flex justify-between items-start p-6 border-b border-slate-100 dark:border-slate-800 shrink-0">
+              <div className="flex justify-between items-start p-5 border-b border-slate-100 dark:border-slate-800 shrink-0">
                 <div className="flex items-center gap-4">
                   <div 
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-lg shrink-0"
-                    style={getGradientStyle(service.gradient)}
+                    className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shadow-md shrink-0 text-white"
+                    style={getGradientStyle(service.gradient, service.id)}
                   >
-                    {service.emoji}
+                    {service.emoji || service.name.charAt(0)}
                   </div>
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <h2 className="text-2xl font-bold text-slate-800 dark:text-white">{service.name}</h2>
+                      <h2 className="text-xl font-bold text-slate-800 dark:text-white">{service.name}</h2>
                       <span className="text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-full">{service.type}</span>
                     </div>
                     <div className="flex items-center gap-4 text-sm font-medium">
-                      {service.rating !== undefined ? (
-                        <>
-                          <div className="flex items-center gap-1.5 text-amber-500">
-                            <Star className="w-5 h-5 fill-current" />
-                            <span>{service.rating.toFixed(1)}</span>
-                          </div>
-                          <div className="flex items-center gap-1.5 text-slate-400">
-                            <MessageSquare className="w-4 h-4" />
-                            <span>{service.reviewCount} نظر کاربران</span>
-                          </div>
-                        </>
+                      {service.reviewCount !== undefined ? (
+                        <div className="flex items-center gap-1.5 text-slate-400">
+                          <MessageSquare className="w-4 h-4" />
+                          <span>{service.reviewCount} نظر کاربران</span>
+                        </div>
                       ) : (
-                        <span className="text-slate-400 text-sm italic">جدید در ابزار زائر - بدون امتیاز</span>
+                        <span className="text-slate-400 text-sm italic">جدید در ابزار زائر - بدون نظر</span>
                       )}
                     </div>
                   </div>
@@ -145,32 +155,32 @@ export function ServiceDetailModal({ service, isOpen, onClose }: ServiceDetailMo
                 </button>
               </div>
               
-              <div className="p-6 overflow-y-auto custom-scrollbar flex-grow">
-                <div className="mb-8">
-                  <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-3">درباره این ابزار</h3>
-                  <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-justify">
+              <div className="p-5 overflow-y-auto custom-scrollbar flex-grow">
+                <div className="mb-6">
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-2">درباره این ابزار</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed text-justify">
                     {service.description}
                   </p>
                 </div>
                 
-                <div className="mb-8">
-                  <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-3">ویژگی‌های برجسته</h3>
+                <div className="mb-6">
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-2">ویژگی‌های برجسته</h3>
                   <div className="flex flex-wrap gap-2">
                     {service.tags.map(tag => (
-                      <span key={tag} className="text-sm font-medium bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 px-4 py-2 rounded-xl">
+                      <span key={tag} className="text-xs font-medium bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 px-3 py-1.5 rounded-xl">
                         {tag}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                {service.rating !== undefined && (
-                  <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-5 flex items-start gap-4 mb-8">
-                    <ShieldCheck className="w-6 h-6 text-emerald-500 shrink-0" />
+                {['3', '23', '24'].includes(service.id) && (
+                  <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 flex items-start gap-4 mb-6">
+                    <ShieldCheck className="w-5 h-5 text-emerald-500 shrink-0" />
                     <div>
                       <h4 className="font-bold text-slate-800 dark:text-white text-sm mb-1">تایید شده توسط ابزار زائر</h4>
                       <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                        این پلتفرم از نظر کیفیت خدمات و رضایت کاربران مورد تایید می‌باشد و دارای امتیاز بالایی در سیستم ارزیابی است.
+                        این پلتفرم از نظر کیفیت خدمات و رضایت کاربران مورد تایید می‌باشد.
                       </p>
                     </div>
                   </div>
@@ -182,8 +192,11 @@ export function ServiceDetailModal({ service, isOpen, onClose }: ServiceDetailMo
                   
                   {auth.currentUser ? (
                     <form onSubmit={handleSubmitReview} className="mb-8 flex gap-3">
-                      <div className="w-10 h-10 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center shrink-0">
-                        <UserIcon className="w-5 h-5" />
+                      <div 
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-white shrink-0 font-bold"
+                        style={getGradientStyle('', auth.currentUser.displayName || auth.currentUser.uid)}
+                      >
+                        {(auth.currentUser.displayName || 'ک').charAt(0)}
                       </div>
                       <div className="flex-grow flex gap-2">
                         <input
@@ -215,8 +228,11 @@ export function ServiceDetailModal({ service, isOpen, onClose }: ServiceDetailMo
                       reviews.map((review) => (
                         <div key={review.id} className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl">
                           <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400">
-                              <UserIcon className="w-4 h-4" />
+                            <div 
+                              className="w-8 h-8 rounded-full flex items-center justify-center text-white shrink-0 text-sm font-bold"
+                              style={getGradientStyle('', review.userName)}
+                            >
+                              {review.userName.charAt(0)}
                             </div>
                             <div>
                               <div className="text-sm font-bold text-slate-800 dark:text-white">{review.userName}</div>
@@ -238,7 +254,10 @@ export function ServiceDetailModal({ service, isOpen, onClose }: ServiceDetailMo
               </div>
               
               <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 flex justify-end shrink-0">
-                <button className="flex items-center gap-2 bg-gradient-to-l from-teal-500 to-emerald-400 hover:from-teal-600 hover:to-emerald-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-teal-500/30 hover:shadow-teal-500/50 transform hover:-translate-y-0.5">
+                <button 
+                  onClick={() => service.link && window.open(service.link, '_blank')}
+                  className="flex items-center gap-2 bg-gradient-to-l from-teal-500 to-emerald-400 hover:from-teal-600 hover:to-emerald-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-teal-500/30 hover:shadow-teal-500/50 transform hover:-translate-y-0.5"
+                >
                   <span>ورود به {service.type}</span>
                   <ExternalLink className="w-4 h-4" />
                 </button>

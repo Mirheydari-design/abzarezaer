@@ -68,12 +68,32 @@ export function useSearchWorker() {
                     dbServices.push({ id: doc.id, ...doc.data() } as ZiyaratService);
                 });
 
+                // Fetch all reviews to calculate real review counts
+                const reviewsSnapshot = await getDocs(collection(db, 'reviews'));
+                const reviewCounts: Record<string, number> = {};
+                reviewsSnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if (data.serviceId) {
+                        reviewCounts[data.serviceId] = (reviewCounts[data.serviceId] || 0) + 1;
+                    }
+                });
+
                 // Merge
-                const allServices = [...MOCK_SERVICES, ...dbServices].filter((v,i,a)=>a.findIndex(v2=>(v2.id===v.id))===i);
+                let allServices = [...MOCK_SERVICES, ...dbServices].filter((v,i,a)=>a.findIndex(v2=>(v2.id===v.id))===i);
+                
+                // Update review counts
+                allServices = allServices.map(s => ({
+                    ...s,
+                    reviewCount: reviewCounts[s.id] || 0
+                }));
 
                 // Check if all have embeddings in cache
                 if (cached && cached.length === allServices.length && cached.every(c => c.embedding)) {
-                    setServices(cached);
+                    const mergedWithCache = allServices.map(s => {
+                        const c = cached.find(x => x.id === s.id);
+                        return { ...s, embedding: c ? c.embedding : s.embedding };
+                    });
+                    setServices(mergedWithCache);
                     return;
                 }
 

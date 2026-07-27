@@ -5,7 +5,7 @@ import { TypewriterSearchBox } from './components/TypewriterSearchBox';
 import { ServiceCard } from './components/ServiceCard';
 import { ServiceDetailModal } from './components/ServiceDetailModal';
 import { SpecialOffers } from './components/SpecialOffers';
-import { SearchHistoryModal } from './components/SearchHistoryModal';
+import { SettingsModal } from './components/SettingsModal';
 import { AddServiceModal } from './components/AddServiceModal';
 import { useSearchWorker } from './hooks/useSearchWorker';
 import { motion, AnimatePresence } from 'motion/react';
@@ -67,12 +67,12 @@ export default function App() {
           onOpenAddService={() => setIsAddServiceOpen(true)}
         />
         
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-24">
-          <div className="text-center max-w-3xl mx-auto mb-16">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-16">
+          <div className="text-center max-w-3xl mx-auto mb-12">
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-l from-slate-900 to-slate-600 dark:from-white dark:to-slate-400"
+              className="text-3xl md:text-5xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-l from-slate-900 to-slate-600 dark:from-white dark:to-slate-400"
             >
               هوشمندانه زیارت کنید
             </motion.h2>
@@ -80,7 +80,7 @@ export default function App() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-lg text-slate-600 dark:text-slate-400 mb-12"
+              className="text-base text-slate-600 dark:text-slate-400 mb-8"
             >
               بهترین خدمات اقامتی، حمل و نقل و راهنمای زیارت را بر اساس نیاز واقعی خود پیدا کنید. موتور جستجوی هوشمند ما، نیاز شما را درک می‌کند.
             </motion.p>
@@ -140,7 +140,7 @@ export default function App() {
           onClose={() => setSelectedService(null)} 
         />
         
-        <SearchHistoryModal
+        <SettingsModal
           isOpen={isSearchHistoryOpen}
           onClose={() => setIsSearchHistoryOpen(false)}
           onSelectSearch={handleSearch}

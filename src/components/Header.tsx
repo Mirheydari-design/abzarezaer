@@ -38,15 +38,12 @@ export function Header({ onOpenSettings, onOpenAddService }: HeaderProps) {
             <button
               onClick={onOpenSettings}
               className="p-2.5 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              aria-label="تاریخچه جستجو"
-              title="تاریخچه جستجوها"
+              aria-label="تنظیمات"
+              title="تنظیمات"
             >
               <Settings className="w-5 h-5" />
             </button>
             <div className="flex items-center gap-3 border-r border-slate-200 dark:border-slate-700 pr-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-teal-500/20">
-                ز
-              </div>
               <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-l from-slate-800 to-slate-500 dark:from-white dark:to-slate-400 hidden sm:block">
                 ابزار زائر
               </h1>

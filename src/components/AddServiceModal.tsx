@@ -10,6 +10,27 @@ interface AddServiceModalProps {
   onSuccess: () => void;
 }
 
+const gradients = [
+  'from-blue-400 to-indigo-500',
+  'from-sky-400 to-cyan-500',
+  'from-purple-400 to-pink-500',
+  'from-teal-400 to-emerald-500',
+  'from-rose-400 to-red-500',
+  'from-amber-400 to-orange-500',
+  'from-fuchsia-400 to-violet-500',
+  'from-emerald-400 to-green-500',
+];
+
+const typeToEmoji: Record<string, string[]> = {
+  'اقامت و هتل': ['🏨', '🛏️', '🏠', '🏢', '🏡'],
+  'حمل و نقل': ['✈️', '🚂', '🚌', '🚕', '🚗'],
+  'راهنمای زیارت': ['🗺️', '🧭', '🕌', '📖', '🕋'],
+  'درمانی': ['🏥', '💊', '🩺', '🚑', '👨‍⚕️'],
+  'موکب': ['⛺', '🍵', '🍛', '🤝', '❤️'],
+  'فروشگاه': ['🎁', '🛍️', '💍', '📿', '🛒'],
+  'سایر': ['✨', '🌟', '💫', '📌', '💡']
+};
+
 export function AddServiceModal({ isOpen, onClose, onSuccess }: AddServiceModalProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -17,6 +38,13 @@ export function AddServiceModal({ isOpen, onClose, onSuccess }: AddServiceModalP
   const [emoji, setEmoji] = useState('🏨');
   const [tags, setTags] = useState('');
   
+  const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newType = e.target.value;
+    setType(newType);
+    const emojis = typeToEmoji[newType] || typeToEmoji['سایر'];
+    setEmoji(emojis[Math.floor(Math.random() * emojis.length)]);
+  };
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -34,7 +62,7 @@ export function AddServiceModal({ isOpen, onClose, onSuccess }: AddServiceModalP
 
     try {
       const parsedTags = tags.split('،').map(t => t.trim()).filter(t => t);
-      const gradient = "from-teal-500 to-emerald-600"; // default
+      const gradient = gradients[Math.floor(Math.random() * gradients.length)];
 
       await addDoc(collection(db, 'services'), {
         name,
@@ -129,7 +157,7 @@ export function AddServiceModal({ isOpen, onClose, onSuccess }: AddServiceModalP
                     </label>
                     <select
                       value={type}
-                      onChange={(e) => setType(e.target.value)}
+                      onChange={handleTypeChange}
                       className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-teal-500 outline-none transition-all text-slate-800 dark:text-white appearance-none"
                     >
                       {types.map(t => (
