@@ -3,7 +3,11 @@ import { motion } from 'motion/react';
 import { ArrowLeft, Sparkles } from 'lucide-react';
 import useEmblaCarousel from 'embla-carousel-react';
 
-export function SpecialOffers() {
+interface SpecialOffersProps {
+  onSelectOffer: (id: string) => void;
+}
+
+export function SpecialOffers({ onSelectOffer }: SpecialOffersProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, direction: 'rtl' });
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -72,8 +76,9 @@ export function SpecialOffers() {
           {offers.map((offer) => (
             <div key={offer.id} className="flex-[0_0_100%] min-w-0 pl-4 md:flex-[0_0_80%] lg:flex-[0_0_60%]">
               <div
-                className="relative overflow-hidden rounded-2xl p-6 text-white shadow-md cursor-grab active:cursor-grabbing group h-full flex flex-col justify-between"
+                className="relative overflow-hidden rounded-2xl p-6 text-white shadow-md cursor-pointer group h-full flex flex-col justify-between"
                 style={getGradientStyle(offer.gradient)}
+                onClick={() => onSelectOffer(offer.id)}
               >
                 <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 

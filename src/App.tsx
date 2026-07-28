@@ -10,6 +10,7 @@ import { AddServiceModal } from './components/AddServiceModal';
 import { useSearchWorker } from './hooks/useSearchWorker';
 import { motion, AnimatePresence } from 'motion/react';
 import { ZiyaratService } from './types';
+import { Filter } from 'lucide-react';
 import { auth, db } from './firebase';
 import { collection, addDoc } from 'firebase/firestore';
 
@@ -20,6 +21,8 @@ export default function App() {
   const [selectedService, setSelectedService] = useState<ZiyaratService | null>(null);
   const [isSearchHistoryOpen, setIsSearchHistoryOpen] = useState(false);
   const [isAddServiceOpen, setIsAddServiceOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('همه');
+  const categories = ['همه', 'پلتفرم', 'موکب', 'ابزار', 'اسکان', 'طرح'];
 
   // Initialize with all services when ready
   useEffect(() => {
@@ -94,17 +97,36 @@ export default function App() {
             </motion.div>
           </div>
 
-          {!isSearching && <SpecialOffers />}
+          {!isSearching && <SpecialOffers onSelectOffer={(id) => setSelectedService(services.find(s => s.id === id) || null)} />}
 
-          <div className="mb-6 flex items-center justify-between">
+          <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <h3 className="text-xl font-bold text-slate-800 dark:text-white">
-                {isSearching ? 'نتایج جستجو' : 'همه پلتفرم‌ها'}
+                {isSearching ? 'نتایج جستجو' : 'همه ابزارها و خدمات زائر'}
               </h3>
               <span className="bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold px-2.5 py-0.5 rounded-full">
-                {results.length}
+                {activeCategory === 'همه' ? results.length : results.filter(s => s.type.includes(activeCategory)).length}
               </span>
             </div>
+            
+            {!isSearching && (
+              <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 scrollbar-none">
+                <Filter className="w-4 h-4 text-slate-400 shrink-0 ml-1" />
+                {categories.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${
+                      activeCategory === cat
+                        ? 'bg-teal-500 text-white'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <AnimatePresence mode="popLayout">
@@ -112,7 +134,7 @@ export default function App() {
               layout
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8"
             >
-              {results.map((service, index) => (
+              {(activeCategory === 'همه' ? results : results.filter(s => s.type.includes(activeCategory))).map((service, index) => (
                 <motion.div
                   key={service.id}
                   layout

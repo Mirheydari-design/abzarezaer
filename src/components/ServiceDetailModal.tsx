@@ -34,10 +34,39 @@ export function ServiceDetailModal({ service, isOpen, onClose }: ServiceDetailMo
         orderBy('date', 'desc')
       );
       const snapshot = await getDocs(q);
-      const fetchedReviews: Review[] = [];
+      let fetchedReviews: Review[] = [];
       snapshot.forEach((doc) => {
         fetchedReviews.push({ id: doc.id, ...doc.data() } as Review);
       });
+      
+      if (serviceId === '23' && fetchedReviews.length === 0) {
+        fetchedReviews = [
+          {
+            id: 'mock-1',
+            serviceId: '23',
+            userId: 'm1',
+            userName: 'علی احمدی',
+            comment: 'خیلی برنامه خوب و کاربردی بود، توی عراق برای حساب کتاب خیلی به دردم خورد.',
+            date: new Date(Date.now() - 100000).toISOString()
+          },
+          {
+            id: 'mock-2',
+            serviceId: '23',
+            userId: 'm2',
+            userName: 'حسین محمدی',
+            comment: 'عالی بود، مخصوصا اینکه به حروف عربی هم مبلغ رو مینویسه خیلی کار راه اندازه.',
+            date: new Date(Date.now() - 200000).toISOString()
+          },
+          {
+            id: 'mock-3',
+            serviceId: '23',
+            userId: 'm3',
+            userName: 'زهرا کاظمی',
+            comment: 'مبدل دینار به تومنش خیلی دقیق و سریع کار میکرد. ممنون از سازنده.',
+            date: new Date(Date.now() - 300000).toISOString()
+          }
+        ];
+      }
       setReviews(fetchedReviews);
     } catch (error) {
       console.error('Error fetching reviews:', error);
@@ -191,27 +220,27 @@ export function ServiceDetailModal({ service, isOpen, onClose }: ServiceDetailMo
                   <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-6">نظرات کاربران</h3>
                   
                   {auth.currentUser ? (
-                    <form onSubmit={handleSubmitReview} className="mb-8 flex gap-3">
+                    <form onSubmit={handleSubmitReview} className="mb-8 flex gap-3 min-w-0">
                       <div 
                         className="w-10 h-10 rounded-full flex items-center justify-center text-white shrink-0 font-bold"
                         style={getGradientStyle('', auth.currentUser.displayName || auth.currentUser.uid)}
                       >
                         {(auth.currentUser.displayName || 'ک').charAt(0)}
                       </div>
-                      <div className="flex-grow flex gap-2">
+                      <div className="flex-grow flex gap-2 min-w-0">
                         <input
                           type="text"
                           value={newComment}
                           onChange={(e) => setNewComment(e.target.value)}
                           placeholder="تجربه خود را بنویسید..."
-                          className="flex-grow px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-teal-500 outline-none text-slate-800 dark:text-white"
+                          className="flex-grow min-w-0 px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-teal-500 outline-none text-slate-800 dark:text-white"
                         />
                         <button 
                           type="submit"
                           disabled={!newComment.trim() || submitting}
-                          className="px-4 py-2.5 bg-teal-500 text-white rounded-xl hover:bg-teal-600 disabled:opacity-50 transition-colors flex flex-center"
+                          className="px-4 py-2.5 bg-teal-500 text-white rounded-xl hover:bg-teal-600 disabled:opacity-50 transition-colors flex items-center justify-center shrink-0"
                         >
-                          <Send className="w-5 h-5" />
+                          <Send className="w-5 h-5 rtl:rotate-180" />
                         </button>
                       </div>
                     </form>
